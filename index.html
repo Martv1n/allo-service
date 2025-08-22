@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Калькулятор Алло боксів</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .hidden { display: none; }
+    .block { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select { padding: 5px; width: 250px; }
+    button { padding: 10px 15px; margin-top: 15px; }
+    #details { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+    #details p { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <h2>Калькулятор вартості Алло боксу</h2>
+
+  <div class="block">
+    <label for="box">Оберіть бокс:</label>
+    <select id="box">
+      <option value="">-- виберіть --</option>
+      <option value="green">Green - 2399</option>
+      <option value="purple">Purple - 2399</option>
+      <option value="black">Black - 3199</option>
+      <option value="orange">Orange - 3199</option>
+      <option value="white">White - 3999</option>
+    </select>
+  </div>
+
+  <div class="block">
+    <label for="accessories">Сума аксесуарів (грн):</label>
+    <input type="number" id="accessories" value="0" min="0">
+  </div>
+
+  <div id="laptop-block" class="hidden block">
+    <label for="laptop">Вартість ноутбука (грн):</label>
+    <input type="number" id="laptop" value="0" min="0">
+  </div>
+
+  <div id="extra-options" class="hidden block">
+    <label for="extra">Додаткові опції:</label>
+    <select id="extra">
+      <option value="">-- виберіть --</option>
+    </select>
+  </div>
+
+  <button onclick="calculate()">Обчислити</button>
+
+  <h3>Фінальна сума: <span id="result">0</span> грн</h3>
+
+  <div id="details" class="hidden">
+    <h4>Деталі обчислення:</h4>
+    <div id="calculation-steps"></div>
+  </div>
+
+  <script>
+    const boxes = {
+      green: { 
+        price: 2399, accDiscount: 20, options: [],
+        perks: "Awax 2 роки, Eset mobile 2 роки, SweetTV М 6 міс / Megogo Легка 6 міс, EnglishDom Words 3 міс"
+      },
+      purple: { 
+        price: 2399, accDiscount: 20, options: ["Гарантія -30%"],
+        perks: "Awax 1 рік, Eset mobile 1 рік, SweetTV М 12 міс / Megogo Легка 12 міс"
+      },
+      black: { 
+        price: 3199, accDiscount: 30, options: [],
+        perks: "Awax довічний, Eset mobile 3 роки, SweetTV М 9 міс / Megogo Легка 9 міс, EnglishDom Words 6 міс"
+      },
+      orange: { 
+        price: 3199, accDiscount: 20, options: ["Windows 11 Home -20%", "Microsoft 365 -30%", "Гарантія -30%"],
+        perks: "Awax 1 рік, Eset ПК 1 рік, SweetTV М 12 міс / Megogo Легка 12 міс"
+      },
+      white: { 
+        price: 3999, accDiscount: 40, options: ["Гарантія -40%"],
+        perks: "Awax довічний, Eset mobile 3 роки, SweetTV М 12 міс / Megogo Легка 12 міс, EnglishDom Words 12 міс"
+      }
+    };
+
+    const boxSelect = document.getElementById("box");
+    const extraBlock = document.getElementById("extra-options");
+    const extraSelect = document.getElementById("extra");
+    const laptopBlock = document.getElementById("laptop-block");
+    const detailsBlock = document.getElementById("details");
+    const stepsContainer = document.getElementById("calculation-steps");
+
+    boxSelect.addEventListener("change", () => {
+      const selected = boxes[boxSelect.value];
+
+      // показуємо додаткові опції
+      if (selected && selected.options.length > 0) {
+        extraBlock.classList.remove("hidden");
+        extraSelect.innerHTML = '<option value="">-- виберіть --</option>';
+        selected.options.forEach(opt => {
+          let o = document.createElement("option");
+          o.value = opt;
+          o.textContent = opt;
+          extraSelect.appendChild(o);
+        });
+      } else {
+        extraBlock.classList.add("hidden");
+      }
+
+      // якщо в опціях є гарантія -> показати поле ноутбука
+      if (selected && selected.options.some(opt => opt.includes("Гарантія"))) {
+        laptopBlock.classList.remove("hidden");
+      } else {
+        laptopBlock.classList.add("hidden");
+      }
+    });
+
+    function calculate() {
+      const selected = boxes[boxSelect.value];
+      const accPrice = parseFloat(document.getElementById("accessories").value) || 0;
+      const laptopPrice = parseFloat(document.getElementById("laptop").value) || 0;
+
+      if (!selected) {
+        alert("Будь ласка, виберіть бокс!");
+        return;
+      }
+
+      let steps = [];
+
+      // ціна боксу
+      steps.push(`Ціна боксу: ${selected.price} грн`);
+
+      // розрахунок аксесуарів зі знижкою (з обмеженням)
+      let discountAcc = accPrice * (selected.accDiscount / 100);
+      let capped = false;
+      if (discountAcc > 1000) {
+        discountAcc = 1000;
+        capped = true;
+      }
+      let finalAcc = accPrice - discountAcc;
+      steps.push(`Аксесуари: ${accPrice} грн - знижка ${selected.accDiscount}% (${discountAcc} грн) = ${finalAcc} грн`);
+      if (capped) {
+        steps.push(`⚠️ Знижка на аксесуари обмежена 1000 грн`);
+      }
+
+      let total = selected.price + finalAcc;
+
+      // додаткові опції
+      if (extraSelect.value.includes("Гарантія")) {
+        let warranty = laptopPrice * 0.1; // 10% від ноутбука
+        steps.push(`Базова гарантія: 10% від ${laptopPrice} грн = ${warranty} грн`);
+
+        if (extraSelect.value.includes("-30%")) {
+          warranty = warranty * 0.7;
+          steps.push(`Знижка на гарантію -30% → ${warranty} грн`);
+        } else if (extraSelect.value.includes("-40%")) {
+          warranty = warranty * 0.6;
+          steps.push(`Знижка на гарантію -40% → ${warranty} грн`);
+        }
+        total += warranty;
+      }
+
+      if (extraSelect.value.includes("Windows 11 Home")) {
+        let windowsPrice = 7000 * 0.8;
+        steps.push(`Windows 11 Home: 7000 грн -20% = ${windowsPrice} грн`);
+        total += windowsPrice;
+      }
+
+      if (extraSelect.value.includes("Microsoft 365")) {
+        let officePrice = 4000 * 0.7;
+        steps.push(`Microsoft 365: 4000 грн -30% = ${officePrice} грн`);
+        total += officePrice;
+      }
+
+      // фінальна сума
+      steps.push(`<b>Фінальна сума без ноутбука: ${total.toFixed(2)} грн</b>`);
+
+      // повна вартість з ноутбуком
+      if (laptopPrice > 0) {
+        let fullTotal = total + laptopPrice;
+        steps.push(`<b>Повна вартість з девайсом: ${fullTotal.toFixed(2)} грн</b>`);
+      }
+
+      // плюшки боксу
+      steps.push(`<i>Плюшки боксу:</i> ${selected.perks}`);
+
+      // вивід результатів
+      document.getElementById("result").textContent = total.toFixed(2);
+      stepsContainer.innerHTML = steps.map(s => `<p>${s}</p>`).join("");
+      detailsBlock.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
