@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Акордеон (мобільний)</title>
+<style>
+  body{
+    font-family: system-ui, Arial, sans-serif;
+    margin:0;
+    background:#f8f9fa;
+    color:#222;
+    padding:10px;
+  }
+  .accordion{
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .item{
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-bottom:10px;
+    background:#fff;
+  }
+  .trigger{
+    width:100%;
+    padding:14px;
+    background:#fff;
+    border:none;
+    font-size:16px;
+    font-weight:600;
+    text-align:left;
+    cursor:pointer;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .trigger:focus{ outline:none; }
+  .chev{ transition:.2s; }
+  .trigger[aria-expanded="true"] .chev{ transform:rotate(90deg); }
+
+  .panel{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease, opacity .2s;
+    opacity:0;
+  }
+  .panel.open{ opacity:1; }
+
+  .content{
+    padding:10px 14px 14px;
+    font-size:14px;
+    line-height:1.4;
+  }
+  ul{ padding-left:18px; margin:6px 0; }
+  li{ margin:4px 0; }
+
+  .gap-20{ height:20px; }
+</style>
+</head>
+<body>
+<div class="accordion">
+
+  <!-- Київстар -->
+  <div class="item">
+    <button class="trigger" aria-expanded="false" aria-controls="p1">
+      Київстар <span class="chev">▶</span>
+    </button>
+    <div class="panel" id="p1">
+      <div class="content">
+        <ul>
+          <li>ВСЕ РАЗОМ Легкий контракт - 230 грн</li>
+          <li>ВСЕ РАЗОМ Крутий контракт - 350 грн</li>
+          <li>Love Ua Comfort Home - 130</li>
+          <li>ВСЕ разом Комфорт - 160</li>
+          <li>Love Ua Світло - 190</li>
+          <li>Love Ua Комфорт - 80</li>
+          <li>Sim для пристроїв - 0 грн</li>
+        </ul>
+        <div class="gap-20"></div>
+        <ul>
+          <li>ВСЕ РАЗОМ Легкий контракт (MNP) - 240 грн</li>
+          <li>ВСЕ РАЗОМ Крутий контракт (MNP) - 350 грн</li>
+          <li>ВСЕ разом Комфорт (MNP) - 240</li>
+          <li>Love Ua Comfort Home (MNP) - 230</li>
+          <li>Love Ua Світло (MNP) - 270</li>
+          <li>Love Ua Комфорт (MNP) - 180</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vodafone -->
+  <div class="item">
+    <button class="trigger" aria-expanded="false" aria-controls="p2">
+      Vodafone <span class="chev">▶</span>
+    </button>
+    <div class="panel" id="p2">
+      <div class="content">
+        <ul>
+          <li>Red start - 140 грн</li>
+          <li>Red Pro - 180</li>
+          <li>Red unlim - 180</li>
+          <li>Red Unlim Plus - 230</li>
+          <li>Red Unlim Max - 230</li>
+          <li>Ultra - 230</li>
+          <li>Ultra VIP - 230</li>
+          <li>Device 4G</li>
+          <li>Flexx_GO - 160</li>
+          <li>Flexx_TOP - 180</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- MNP LifeCell + Vodafone -->
+  <div class="item">
+    <button class="trigger" aria-expanded="false" aria-controls="p3">
+      MNP LifeCell та Vodafone <span class="chev">▶</span>
+    </button>
+    <div class="panel" id="p3">
+      <div class="content">
+        <p>LifeCell + MNP — 30 грн (при активації в 1С у місяці підключення)</p>
+        <p>Vodafone + MNP — 100% абонплати, при другому успішному підключенні +200 грн</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll('.trigger').forEach(btn=>{
+    const panel = document.getElementById(btn.getAttribute('aria-controls'));
+    btn.addEventListener('click', ()=>{
+      const isOpen = btn.getAttribute('aria-expanded')==="true";
+      document.querySelectorAll('.panel').forEach(p=>{
+        p.style.maxHeight=null;
+        p.classList.remove('open');
+        document.querySelector('[aria-controls="'+p.id+'"]').setAttribute('aria-expanded','false');
+      });
+      if(!isOpen){
+        panel.style.maxHeight=panel.scrollHeight+"px";
+        panel.classList.add('open');
+        btn.setAttribute('aria-expanded','true');
+      }
+    });
+  });
+</script>
+</body>
+</html>
