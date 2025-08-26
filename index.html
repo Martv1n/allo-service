@@ -2,16 +2,84 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Калькулятор Алло боксів</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .hidden { display: none; }
-    .block { margin-bottom: 15px; }
-    label { display: block; margin-bottom: 5px; font-weight: bold; }
-    input, select { padding: 5px; width: 250px; }
-    button { padding: 10px 15px; margin-top: 15px; }
-    #details { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
-    #details p { margin: 5px 0; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 15px;
+      background: #f5f7fa;
+      color: #222;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .block {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      font-size: 18px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    h3 {
+      margin-top: 20px;
+      font-size: 20px;
+      text-align: center;
+    }
+    #details {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    #details h4 {
+      margin-bottom: 10px;
+      font-size: 18px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+    #details p {
+      margin: 6px 0;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    @media (max-width: 480px) {
+      h2 { font-size: 20px; }
+      h3 { font-size: 18px; }
+      button { font-size: 16px; padding: 12px; }
+      input, select { font-size: 14px; padding: 8px; }
+    }
+
+    .MNP {
+      display: block;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -89,7 +157,6 @@
     boxSelect.addEventListener("change", () => {
       const selected = boxes[boxSelect.value];
 
-      // показуємо додаткові опції
       if (selected && selected.options.length > 0) {
         extraBlock.classList.remove("hidden");
         extraSelect.innerHTML = '<option value="">-- виберіть --</option>';
@@ -103,7 +170,6 @@
         extraBlock.classList.add("hidden");
       }
 
-      // якщо в опціях є гарантія -> показати поле ноутбука
       if (selected && selected.options.some(opt => opt.includes("Гарантія"))) {
         laptopBlock.classList.remove("hidden");
       } else {
@@ -123,10 +189,8 @@
 
       let steps = [];
 
-      // ціна боксу
       steps.push(`Ціна боксу: ${selected.price} грн`);
 
-      // розрахунок аксесуарів зі знижкою (з обмеженням)
       let discountAcc = accPrice * (selected.accDiscount / 100);
       let capped = false;
       if (discountAcc > 1000) {
@@ -141,9 +205,8 @@
 
       let total = selected.price + finalAcc;
 
-      // додаткові опції
       if (extraSelect.value.includes("Гарантія")) {
-        let warranty = laptopPrice * 0.1; // 10% від ноутбука
+        let warranty = laptopPrice * 0.1;
         steps.push(`Базова гарантія: 10% від ${laptopPrice} грн = ${warranty} грн`);
 
         if (extraSelect.value.includes("-30%")) {
@@ -168,24 +231,20 @@
         total += officePrice;
       }
 
-      // фінальна сума
       steps.push(`<b>Фінальна сума без ноутбука: ${total.toFixed(2)} грн</b>`);
 
-      // повна вартість з ноутбуком
       if (laptopPrice > 0) {
         let fullTotal = total + laptopPrice;
         steps.push(`<b>Повна вартість з девайсом: ${fullTotal.toFixed(2)} грн</b>`);
       }
 
-      // плюшки боксу
       steps.push(`<i>Плюшки боксу:</i> ${selected.perks}`);
 
-      // вивід результатів
       document.getElementById("result").textContent = total.toFixed(2);
       stepsContainer.innerHTML = steps.map(s => `<p>${s}</p>`).join("");
       detailsBlock.classList.remove("hidden");
     }
   </script>
-  <a href="NKP.html">НКП</a>
+  <a class="MNP" href="NKP.html">НКП</a>
 </body>
 </html>
